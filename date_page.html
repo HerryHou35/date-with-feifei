@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>和菲菲的第一次date</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Dancing+Script:wght@600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{min-height:100vh;font-family:'Playfair Display',serif;overflow:hidden;background:linear-gradient(135deg,#ffe0ec 0%,#ffd6e7 40%,#ffb3cf 100%);}
+  #canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+  .page{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;transition:opacity .8s ease,transform .8s ease;}
+  .page.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
+
+  /* PAGE 1 */
+  #p1 .glass{
+    background:rgba(255,255,255,.35);backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.6);border-radius:32px;
+    padding:52px 60px;text-align:center;
+    box-shadow:0 8px 40px rgba(255,105,150,.18);
+    animation:fadeUp .9s ease both;position:relative;
+  }
+
+  /* rotating flower */
+  .flower{
+    position:absolute;top:-38px;left:50%;transform:translateX(-50%);
+    font-size:2.6rem;
+    animation:spinFloat 6s linear infinite;
+    filter:drop-shadow(0 2px 6px rgba(233,30,140,.25));
+  }
+  @keyframes spinFloat{
+    0%{transform:translateX(-50%) rotate(0deg) translateY(0);}
+    50%{transform:translateX(-50%) rotate(180deg) translateY(-6px);}
+    100%{transform:translateX(-50%) rotate(360deg) translateY(0);}
+  }
+
+  #p1 .title{font-family:'Dancing Script',cursive;font-size:clamp(2rem,6vw,3.4rem);color:#c2185b;text-shadow:0 2px 12px rgba(194,24,91,.2);margin-bottom:14px;}
+  #p1 .sub{font-size:clamp(.85rem,2.5vw,1.05rem);color:#e91e8c;letter-spacing:.12em;font-style:italic;margin-bottom:6px;animation:fadeUp .9s .2s ease both;opacity:0;animation-fill-mode:forwards;}
+  #p1 .sub2{font-size:clamp(.8rem,2vw,.95rem);color:#f48fb1;letter-spacing:.1em;animation:fadeUp .9s .4s ease both;opacity:0;animation-fill-mode:forwards;}
+
+  /* weather card */
+  .weather{
+    margin-top:20px;
+    display:inline-flex;align-items:center;gap:10px;
+    background:rgba(255,255,255,.45);border:1px solid rgba(255,200,220,.6);
+    border-radius:16px;padding:9px 20px;
+    animation:fadeUp .9s .5s ease both;opacity:0;animation-fill-mode:forwards;
+  }
+  .weather .icon{font-size:1.4rem;}
+  .weather .info{text-align:left;}
+  .weather .city{font-size:.7rem;color:#e91e8c;letter-spacing:.08em;font-family:sans-serif;}
+  .weather .temp{font-size:.88rem;color:#c2185b;font-weight:700;font-family:sans-serif;}
+  .weather .desc{font-size:.7rem;color:#f48fb1;font-family:sans-serif;}
+
+  #heartBtn{
+    margin-top:28px;
+    background:linear-gradient(135deg,#f06292,#e91e8c);
+    border:none;border-radius:50%;width:72px;height:72px;
+    cursor:pointer;font-size:2rem;
+    box-shadow:0 4px 20px rgba(233,30,140,.35);
+    animation:pulse 1.5s infinite,fadeUp .9s .6s ease both;
+    opacity:0;animation-fill-mode:forwards;transition:transform .15s;
+  }
+  #heartBtn:hover{transform:scale(1.12);}
+
+  /* PAGE 2 */
+  #p2{padding:24px 16px;overflow-y:auto;align-items:center;}
+  #p2 .inner{max-width:640px;width:100%;animation:fadeUp .7s ease both;}
+  #p2 h2{font-family:'Dancing Script',cursive;font-size:clamp(1.6rem,5vw,2.4rem);color:#c2185b;text-align:center;margin-bottom:20px;}
+  .back-btn{display:block;margin:0 auto 18px;background:rgba(255,255,255,.45);border:1px solid rgba(255,150,180,.5);border-radius:20px;padding:7px 22px;color:#c2185b;font-size:.85rem;cursor:pointer;transition:background .2s;}
+  .back-btn:hover{background:rgba(255,255,255,.7);}
+  .timeline{position:relative;padding-left:28px;}
+  .timeline::before{content:'';position:absolute;left:9px;top:0;bottom:0;width:2px;background:linear-gradient(#f48fb1,#f06292,#e91e8c);border-radius:2px;}
+  .step{position:relative;margin-bottom:14px;background:rgba(255,255,255,.4);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.6);border-radius:18px;padding:14px 18px;box-shadow:0 3px 16px rgba(255,105,150,.12);}
+  .step::before{content:'';position:absolute;left:-23px;top:18px;width:12px;height:12px;border-radius:50%;background:#e91e8c;box-shadow:0 0 0 3px #ffd6e7;}
+  .step .tag{display:inline-block;font-size:.7rem;letter-spacing:.08em;padding:2px 10px;border-radius:20px;margin-bottom:7px;font-style:normal;font-family:sans-serif;}
+  .tag.walk{background:#fce4ec;color:#c2185b;}
+  .tag.train{background:#f8bbd0;color:#880e4f;}
+  .tag.start{background:#ffb3cf;color:#880e4f;}
+  .tag.end{background:#e91e8c;color:#fff;}
+  .step h3{font-size:.95rem;color:#880e4f;margin-bottom:5px;}
+  .step p,.step li{font-size:.82rem;color:#ad1457;line-height:1.6;}
+  .step ul{padding-left:14px;}
+  .step .via{font-size:.76rem;color:#e91e63;margin-top:4px;font-style:italic;}
+  .line-badge{display:inline-block;border-radius:6px;padding:1px 8px;font-size:.72rem;font-family:sans-serif;font-weight:700;margin-right:5px;color:#fff;vertical-align:middle;}
+  .l-gyeongui{background:#77c4a3;}
+  .l-line1{background:#0052a4;}
+  .l-line9{background:#b5a200;}
+  .end-note{margin-top:6px;font-size:.82rem;color:#c2185b;font-family:'Dancing Script',cursive;font-size:1rem;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(233,30,140,.4),0 4px 20px rgba(233,30,140,.35);}50%{box-shadow:0 0 0 12px rgba(233,30,140,0),0 4px 20px rgba(233,30,140,.35);}}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<!-- PAGE 1 -->
+<div class="page" id="p1">
+  <div class="glass">
+    <div class="flower">🌸</div>
+    <div class="title">和菲菲的第一次 date</div>
+    <div class="sub">Have a nice day ✨</div>
+    <div class="sub2">Be happy everyday 💕</div>
+    <div class="weather">
+      <div class="icon">☀️</div>
+      <div class="info">
+        <div class="city">首尔 · 今日天气</div>
+        <div class="temp">6° / 18°C</div>
+        <div class="desc">晴天 &nbsp;·&nbsp; 适合约会</div>
+      </div>
+    </div>
+    <button id="heartBtn" onclick="goPage2()">❤️</button>
+  </div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page hidden" id="p2">
+  <div class="inner">
+    <h2>🗺️ 今日行程</h2>
+    <button class="back-btn" onclick="goPage1()">← 返回</button>
+    <div class="timeline">
+
+      <div class="step">
+        <span class="tag start">出发点</span>
+        <h3>🏫 韩国航空大学校</h3>
+        <p>步行约 <strong>650 米</strong> 前往地铁站（2号出口）</p>
+      </div>
+
+      <div class="step">
+        <span class="tag walk">🚶 步行</span>
+        <h3>➡ 韩国航空大学站</h3>
+        <p>到达后从 2号出口 进站乘车</p>
+      </div>
+
+      <div class="step">
+        <span class="tag train">第一段</span>
+        <h3><span class="line-badge l-gyeongui">京义中央线</span>往水色方向</h3>
+        <p>🚉 <strong>韩国航空大学站</strong> 上车</p>
+        <p class="via">途经：水色站 · 数码媒体城站 · 加佐站 · 弘益大学站 · 西江大学站 · 孔德站 · 孝昌公园站</p>
+        <p>🏁 <strong>龙山站</strong> 下车（左侧下车，步行换乘约 188 米）</p>
+      </div>
+
+      <div class="step">
+        <span class="tag train">第二段</span>
+        <h3><span class="line-badge l-line1">1号线</span>往鹭梁津方向</h3>
+        <p>🚉 <strong>龙山站</strong> 上车</p>
+        <p>🏁 <strong>鹭梁津站</strong> 下车（左侧下车）</p>
+      </div>
+
+      <div class="step">
+        <span class="tag train">第三段</span>
+        <h3><span class="line-badge l-line9">9号线 急行</span>往铜雀方向</h3>
+        <p>🚉 <strong>鹭梁津站</strong> 上车</p>
+        <p class="via">途经：铜雀站 · 高速巴士客运站 · 新论岘站 · 宣靖陵站</p>
+        <p>🏁 <strong>奉恩寺站</strong> 下车（右侧下车）</p>
+      </div>
+
+      <div class="step">
+        <span class="tag end">🐠 终点</span>
+        <h3>COEX 水族馆</h3>
+        <p>奉恩寺站下车后步行约 <strong>1 分钟</strong> 即到！</p>
+        <p style="font-size:.75rem;color:#f48fb1;margin-top:4px;">📍 三成洞 159</p>
+        <p class="end-note">好期待见到你 💗</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- PARTICLE CANVAS ----------
+const cvs=document.getElementById('canvas'),ctx=cvs.getContext('2d');
+let W,H,particles=[];
+function resize(){W=cvs.width=innerWidth;H=cvs.height=innerHeight;init();}
+window.addEventListener('resize',resize);
+function rand(a,b){return a+Math.random()*(b-a);}
+class Particle{
+  constructor(){this.reset(true);}
+  reset(init){this.x=rand(0,W);this.y=init?rand(0,H):H+20;this.size=rand(6,14);this.alpha=rand(.3,.7);this.speed=rand(.2,.6);this.drift=rand(-.3,.3);this.type=Math.random()<.5?'heart':'petal';this.rot=rand(0,Math.PI*2);this.rotSpeed=rand(-.01,.01);}
+  update(){this.y-=this.speed;this.x+=this.drift;this.rot+=this.rotSpeed;if(this.y<-20)this.reset(false);}
+  draw(){ctx.save();ctx.globalAlpha=this.alpha;ctx.translate(this.x,this.y);ctx.rotate(this.rot);this.type==='heart'?drawHeart(ctx,this.size):drawPetal(ctx,this.size);ctx.restore();}
+}
+function drawHeart(c,s){c.fillStyle='#f48fb1';c.beginPath();c.moveTo(0,-s*.4);c.bezierCurveTo(s*.5,-s,s,0,0,s*.7);c.bezierCurveTo(-s,0,-s*.5,-s,0,-s*.4);c.fill();}
+function drawPetal(c,s){c.fillStyle='#ffb3cf';c.beginPath();c.ellipse(0,0,s*.35,s*.6,0,0,Math.PI*2);c.fill();}
+function init(){particles=[];const n=Math.floor(W*H/14000);for(let i=0;i<n;i++)particles.push(new Particle());}
+function loop(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.update();p.draw();});requestAnimationFrame(loop);}
+resize();loop();
+
+// ---------- HEART SOUND ----------
+function playHeartSound(){
+  const ac=new(window.AudioContext||window.webkitAudioContext)();
+  // soft "pop" using two sine tones
+  [[880,.08],[1100,.05]].forEach(([freq,delay])=>{
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.type='sine';o.frequency.setValueAtTime(freq,ac.currentTime+delay);
+    o.frequency.exponentialRampToValueAtTime(freq*1.5,ac.currentTime+delay+.06);
+    g.gain.setValueAtTime(0,ac.currentTime+delay);
+    g.gain.linearRampToValueAtTime(.22,ac.currentTime+delay+.03);
+    g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+delay+.25);
+    o.connect(g);g.connect(ac.destination);
+    o.start(ac.currentTime+delay);o.stop(ac.currentTime+delay+.3);
+  });
+}
+
+// ---------- PAGE SWITCH ----------
+function goPage2(){
+  playHeartSound();
+  document.getElementById('p1').classList.add('hidden');
+  document.getElementById('p2').classList.remove('hidden');
+}
+function goPage1(){
+  document.getElementById('p2').classList.add('hidden');
+  document.getElementById('p1').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
